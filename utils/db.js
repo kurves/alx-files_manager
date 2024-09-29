@@ -17,9 +17,8 @@ class DBClient {
       console.error(`Failed to connect to MongoDB: ${err}`);
     });
   }
-
   isAlive() {
-    return this.client.isConnected();
+  return this.client && this.client.topology && this.client.topology.isConnected();
   }
 
   async nbUsers() {
