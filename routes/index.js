@@ -3,6 +3,7 @@ import AppController from '../controllers/AppController.js';
 
 const router = Router();
 
+// Define the two routes
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
 
