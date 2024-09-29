@@ -24,7 +24,7 @@ class UsersController {
       email,
       password: hashedPassword,
     };
-
+ 
     try {
       const result = await dbClient.db.collection('users').insertOne(newUser);
 
@@ -34,6 +34,23 @@ class UsersController {
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+  static async getMe(req, res) {
+    const token = req.header('X-Token');
+    const userId = await redisClient.get(`auth_${token}`);
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const user = await dbClient.db.collection('users').findOne({ _id: dbClient.ObjectId(userId) });
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    return res.status(200).json({ id: user._id, email: user.email });
+  }
+}
 }
 
 export default UsersController;

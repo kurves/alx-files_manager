@@ -1,7 +1,5 @@
 import redisClient from '../utils/redis.js';
 import dbClient from '../utils/db.js';
-import crypto from 'crypto';
-import dbClient from '../utils/db.js';
 
 class AppController {
   static async getStatus(req, res) {
