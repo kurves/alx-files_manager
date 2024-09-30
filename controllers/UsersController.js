@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import dbClient from '../utils/db.js';
-
+const userQueue = require('../utils/queue').userQueue;
+const dbClient = require('../utils/db');
 
 class UsersController {
   static async postNew(req, res) {
@@ -17,6 +18,17 @@ class UsersController {
     if (existingUser) {
       return res.status(400).json({ error: 'Already exist' });
     }
+    const userExists = await dbClient.findUserByEmail(email);
+    if (userExists) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    const userId = await dbClient.createUser(email, password);
+    
+    await userQueue.add({ userId });
+
+    return res.status(201).json({ id: userId, email });
+   }
 
     const hashedPassword = crypto.createHash('sha1').update(password).digest('hex');
 

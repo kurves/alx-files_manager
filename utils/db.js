@@ -40,6 +40,21 @@ class DBClient {
       return 0;
     }
   }
+  async getUserById(userId) {
+    // Retrieve the user from the database using the userId
+    const user = await this.usersCollection.findOne({ _id: ObjectId(userId) });
+    return user;
+  }
+
+  async findUserByEmail(email) {
+    const user = await this.usersCollection.findOne({ email });
+    return user;
+  }
+
+  async createUser(email, password) {
+    const result = await this.usersCollection.insertOne({ email, password });
+    return result.insertedId;
+  }
 }
 
 const dbClient = new DBClient();

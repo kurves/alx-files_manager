@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const imageThumbnail = require('image-thumbnail');
 const fileQueue = new Bull('fileQueue');
+const userQueue = new Bull('userQueue');
 
 fileQueue.process(async (job, done) => {
     const { fileId, userId } = job.data;
@@ -35,4 +36,21 @@ fileQueue.process(async (job, done) => {
 
     done();
 });
+userQueue.process(async (job, done) => {
+  const { userId } = job.data;
 
+  if (!userId) {
+    throw new Error('Missing userId');
+  }
+
+  const user = await dbClient.getUserById(userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  console.log(`Welcome ${user.email}!`);
+
+
+  done();
+});
+module.exports = { userQueue };
