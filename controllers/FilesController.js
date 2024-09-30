@@ -89,7 +89,15 @@ class FilesController {
         parentId,
       });
     }
-  }
+    if (fileDocument.type === 'image') {
+        await fileQueue.add({
+            userId: user._id,
+            fileId: fileDocument._id
+        });
+    }
+
+    return res.status(201).json(fileDocument);
+    }
     static async getShow(req, res) {
     try {
       const token = req.headers['x-token']; // Extract token from headers
