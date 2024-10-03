@@ -1,7 +1,8 @@
 import { MongoClient } from 'mongodb';
-import dotenv from 'dotenv';
 
-dotenv.config();
+const { ObjectId } = require('mongodb');
+
+require('dotenv').config();
 
 class DBClient {
   constructor() {
@@ -17,8 +18,9 @@ class DBClient {
       console.error(`Failed to connect to MongoDB: ${err}`);
     });
   }
+
   isAlive() {
-  return this.client && this.client.topology && this.client.topology.isConnected();
+    return this.client && this.client.topology && this.client.topology.isConnected();
   }
 
   async nbUsers() {
@@ -40,6 +42,7 @@ class DBClient {
       return 0;
     }
   }
+
   async getUserById(userId) {
     // Retrieve the user from the database using the userId
     const user = await this.usersCollection.findOne({ _id: ObjectId(userId) });
