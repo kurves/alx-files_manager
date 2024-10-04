@@ -3,20 +3,18 @@ const dbClient = require('../utils/db');
 const userQueue = require('../worker');
 
 class UsersController {
-  static async postNew(req, res) {
-    const { email, password } = req.body;
-
-    if (!email) {
-      return res.status(400).json({ error: 'Missing email' });
-    }
-    if (!password) {
-      return res.status(400).json({ error: 'Missing password' });
-    }
-
+static async postNew(req, res) {
     try {
-      const usersCollection = dbClient.db.collection('users');
-      
-      const existingUser = await usersCollection.findOne({ email });
+      const { email, password } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ error: 'Missing email' });
+      }
+      if (!password) {
+        return res.status(400).json({ error: 'Missing password' });
+      }
+
+      const existingUser = await dbClient.db.collection('users').findOne({ email });
       if (existingUser) {
         return res.status(400).json({ error: 'Already exist' });
       }
@@ -28,15 +26,9 @@ class UsersController {
         password: hashedPassword,
       };
 
-      const result = await usersCollection.insertOne(newUser);
-      const userId = result.insertedId;
+      const result = await dbClient.db.collection('users').insertOne(newUser);
 
-      await userQueue.add({ userId });
-
-      return res.status(201).json({
-        id: userId,
-        email,
-      });
+      return res.status(201).json({ id: result.insertedId, email });
     } catch (error) {
       console.error('Error creating new user:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
