@@ -15,7 +15,7 @@ router.get('/connect', AuthController.getConnect);
 router.get('/disconnect', AuthController.getDisconnect);
 
 // User routes
-router.post('/users', UsersController.postNew);
+// router.post('/users', UsersController.postNew);
 
 // File routes
 router.post('/files', FilesController.postUpload);
